@@ -4,7 +4,7 @@ Create galaxy mock spectra (and more) using Python.
 
 This package is currently under development and will be updated continuously. 
 
-Use at your own risk (see LICENCE for details). 
+Use at your own risk.
 
 ## Attribution
 
