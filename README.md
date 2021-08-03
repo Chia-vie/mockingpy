@@ -16,7 +16,7 @@ Clone this repository into a local working directory
 
 Install the package using `python setup.py install` in the same directory
 
-Download MILES (Vazdekis 2010, Vazdekis 2015) data (see below)
+Download MILES data (see below)
 
 In python `import mockingpy` 
 
