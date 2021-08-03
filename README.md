@@ -1,12 +1,14 @@
 # mockingpy
 
-Written by Christine Ackerl, based on work by Alina Boecker
-
 Create galaxy mock spectra (and more) using Python.
 
 This package is currently under development and will be updated continuously. 
 
 Use at your own risk (see LICENCE for details). 
+
+## Attribution
+
+Written by Christine Ackerl, based on work by Alina Boecker
 
 ## How to use mockingpy:
 
