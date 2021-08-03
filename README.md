@@ -7,17 +7,19 @@ Use at your own risk (see LICENCE for details).
 
 ## How to use mockingpy:
 
-Clone this repository 
+Clone this repository
 
-Download MILES data (see below): 
+Install the package using `python setup.py install` in the same directory
 
-Install the package using `python setup.py install` 
+Download MILES data (see below)
 
 In python `import mockingpy` 
 
 This will create a `config.yml` file in your current working directory. 
 
 Edit this file according to your needs and specify the paths to your MILES and particle data (see below). 
+
+
 
 ## MILES data:
 
