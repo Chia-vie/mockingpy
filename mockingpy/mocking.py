@@ -15,7 +15,8 @@ import pickle
 
 class MakeMock():
     def __init__(self, config):
-        self.config = config
+        with open(config, "r") as ymlfile:
+            self.config = yaml.load(ymlfile, Loader=yaml.FullLoader)
         self.read_config()
         # loop through all possibilities
         for name in self.name_particles:
@@ -339,6 +340,4 @@ class MakeMock():
             hdu.close()
 
 if __name__ == '__main__':
-    with open("default_config.yml", "r") as ymlfile:
-        config = yaml.load(ymlfile, Loader=yaml.FullLoader)
-        makemock = MakeMock(config)
+    MakeMock('default_config.yml')
