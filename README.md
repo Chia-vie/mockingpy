@@ -12,19 +12,19 @@ Written by Christine Ackerl, based on work by Alina Boecker
 
 ## How to use mockingpy:
 
-Clone this repository into a local working directory
+1) Clone this repository into a local working directory
 
-Install the package using `python setup.py install` in the same directory
+2) Install the package using `python setup.py install` in the same directory
 
-Download MILES data (see below)
+3) Download MILES data (see below)
 
-In python `import mockingpy` 
+4) In python `import mockingpy` 
 
-This will create a `config.yml` file in your working directory. 
+   This will create a `config.yml` file in your working directory. 
 
-Edit this config file according to your needs and specify the paths to your MILES and particle data (see below). 
+5) Edit this config file according to your needs and specify the paths to your MILES and particle data (see below). 
 
-To create the mock spectra run `mockingpy.MakeMock('config.yml')` or change the config filename accordingly
+6) To create the mock spectra run `mockingpy.MakeMock('config.yml')` or change the config filename accordingly
 
 The resulting spectra will be stored in `.fits` files.
 
@@ -49,6 +49,11 @@ ATTENTION: Missing headers. Put this line on the very top of each file:
 `IMF_type slope [M/H] Age U B V R I J H K U-V B-V V-R V-I V-J V-H V-K (M/L)U (M/L)B (M/L)V (M/L)R (M/L)I (M/L)J (M/L)H (M/L)K F439W F555W F675W F814W F439W-F555W F555W-F675W F555W-F814W`
 
 Specify the path all M/L files (e.g. milesdata/masstolight/) in the config file.
+
+### 3) Flux tables
+The code will create intermediate output files for you, such as flux tables. 
+
+Please specify the path where those files should be stored (e.g. milesdata/output/) in the config file. 
 
 ## Particle data:
 Please provide a header in your particle data files. 
