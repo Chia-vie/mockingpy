@@ -1,4 +1,4 @@
-# mockingpy
+# mockingpy ![alt text](https://github.com/Chia-vie/mockingpy/logo.png)
 
 Create galaxy mock spectra (and more) using Python.
 
