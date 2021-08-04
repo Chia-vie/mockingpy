@@ -49,7 +49,7 @@ ATTENTION: Missing headers. Put this line on the very top of each file:
 
 `IMF_type slope [M/H] Age U B V R I J H K U-V B-V V-R V-I V-J V-H V-K (M/L)U (M/L)B (M/L)V (M/L)R (M/L)I (M/L)J (M/L)H (M/L)K F439W F555W F675W F814W F439W-F555W F555W-F675W F555W-F814W`
 
-Specify the path all M/L files (e.g. milesdata/masstolight/) in the config file.
+Specify the path to all M/L files (e.g. milesdata/masstolight/) in the config file.
 
 ### 3) Flux tables
 The code will create intermediate output files for you, such as flux tables. 
