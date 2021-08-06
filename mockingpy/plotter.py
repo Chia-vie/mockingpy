@@ -5,7 +5,7 @@ import glob
 import os
 import seaborn as sns
 
-class PlotMock():
+class PlotSpec():
     def __init__(self,files):
         self.path = os.getcwd()
         self.filenames = [filename for filename in glob.glob(self.path+'/'+files)]
@@ -27,7 +27,6 @@ class PlotMock():
     def plot(self):
         x = np.arange(3540.5,3540.5+(4300*0.9),0.9)
         fig, ax = plt.subplots(1,1,figsize=(20,5))
-        #plt.figure(figsize = (20,5))
         colors = self.colors()
         labels = self.labels()
         for filename in self.filenames:
@@ -41,4 +40,7 @@ class PlotMock():
         for line in leg.get_lines():
             line.set_linewidth(10)
         plt.show()
+
+
+
 
