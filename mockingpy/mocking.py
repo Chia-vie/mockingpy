@@ -166,7 +166,7 @@ class MakeMock():
             else:
                 met_string = 'p%4.2f' %(met_column[i])
             name = '%sMILES_%s_%s_%s/M%s%4.2fZ%sT%07.4f_%s_%s.fits'%(self.path_models,
-                self.isochrone, imf_type,alpha, imf_type, imf_slope,
+                self.isochrone, imf_type,alpha_temp, imf_type, imf_slope,
                 met_string, age_column[i], temp, alpha_temp)
             hdu = fits.open(name)
             flux = hdu[0].data
@@ -319,7 +319,7 @@ class MakeMock():
     '''
 
     def add_noise(self, name_particles, imf_type, imf_slope, alpha, SNR):
-        hdu = fits.open('eagle_%s_%s_%s%4.2f_%s.fits' %(
+        hdu = fits.open('result_%s_%s_%s%4.2f_%s.fits' %(
             name_particles , self.isochrone , imf_type , imf_slope , alpha))
         flux = hdu[0].data
         header = hdu[0].header
