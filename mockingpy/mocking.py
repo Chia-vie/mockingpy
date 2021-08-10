@@ -12,6 +12,7 @@ from scipy import interpolate
 from astropy.io import fits
 import pandas as pd
 import pickle
+from tqdm import tqdm
 
 class MakeMock():
     def __init__(self, config):
@@ -21,7 +22,7 @@ class MakeMock():
         # loop through all possibilities
         for name in self.name_particles:
             self.read_particles(name)
-            age_models, met_models, age_grid, met_grid, age_bin, met_bin = self.set_up_grid(name)
+            age_models, met_models, age_grid, met_grid, age_bin, met_bin = self.set_up_grid()
             for t in self.imf_type:
                 for s in self.imf_slope:
                     for a in self.alpha:
@@ -36,6 +37,7 @@ class MakeMock():
         '''
         see config.yaml file for explanation
         '''
+        print('Reading config file')
         self.path_particles = self.config['particles']['path']
         self.prefix_particles = self.config['particles']['prefix']
         self.name_particles = self.config['particles']['names']
@@ -58,6 +60,7 @@ class MakeMock():
         :param name: Name of particle file
         :return:
         '''
+        print(f'Reading particle data: {name}')
         particles = pd.read_table('%s%s%s.dat' % (self.path_particles, self.prefix_particles, name), sep="\s+")
         particles.replace([np.inf, -np.inf], np.nan, inplace=True)
         particles.dropna(subset=[self.agecol, self.metcol, self.masscol], inplace=True)
@@ -65,7 +68,7 @@ class MakeMock():
         self.met_tag = particles[self.metcol].to_numpy()
         self.mass_tag = particles[self.masscol].to_numpy()
 
-    def set_up_grid(self, name):
+    def set_up_grid(self):
         '''
         this sets up the grid and bins for the finer model grid (age
         grid stays the same as models, metallicity grid in increments of 0.01 dex)
@@ -75,6 +78,7 @@ class MakeMock():
         particles data that falls into a bin will be assigned the
         corresponding grid point
         '''
+        print('Setting up age-metallicity grid')
         # get all metallicities and ages from BASTI/MILES-Models
         if self.isochrone == 'Padova00':
             # These are the available metallicities and ages for Padova00 (see http://research.iac.es/proyecto/miles/pages/ssp-models.php)
@@ -89,9 +93,9 @@ class MakeMock():
         else:
             # These are the available metallicities and ages for BaSTI (see http://research.iac.es/proyecto/miles/pages/ssp-models.php)
             met_models = np.array([-2.27, -1.79, -1.49, -1.26, -0.96,
-                                   -0.66, -0.35, -0.25, 0.06, 0.15, 0.26,0.40])
+                                   -0.66, -0.35, -0.25, 0.06, 0.15, 0.26, 0.40])
             age_models = np.array([0.03, 0.04, 0.05, 0.06, 0.07,
-                                   0.08, 0.09, 0.1, 0.15, 0.2, 0.2, 0.3, 0.35, 0.4,
+                                   0.08, 0.09, 0.1, 0.15, 0.2, 0.3, 0.35, 0.4,
                                    0.45, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.25, 1.5,
                                    1.75, 2.0, 2.25, 2.5, 2.75, 3.0, 3.25, 3.5, 3.75,
                                    4.0, 4.5, 5.0, 5.5, 6.0, 6.5, 7.0, 7.5, 8.0, 8.5,
@@ -137,6 +141,7 @@ class MakeMock():
         this functions makes a flux table for all age/met combinations
         of the specified MILES library and stores it in a txt- and pickle-file
         '''
+        print(f'Computing fluxes for IMF-type: {imf_type}, IMF-slope: {imf_slope}, alpha-abundance: {alpha}')
         #get all metallicities and ages from MILES-Models for chosen IMF
         #df = pd.read_csv('milesdata/%s_%s_baseFe_agemetML.txt'%(isochrone,imf_type),header=0, delim_whitespace=True)
         df = pd.read_csv('%sout_phot_%s_%s.txt'%(self.path_mass_to_light,imf_type,self.isochrone.upper()),header=0, delim_whitespace=True)
@@ -189,6 +194,7 @@ class MakeMock():
         grid is too coarse for your purpose it stores all new age/met
         combinations and the corresponding flux in a txt- and pickle-file
         '''
+        print(f'Refining fluxes for IMF-type: {imf_type}, IMF-slope: {imf_slope}, alpha-abundance: {alpha}')
         #dataframe for MILES models
         #all metallicity/age combinations stored in one array
         df = pd.read_csv('%sout_phot_%s_%s.txt' %(self.path_mass_to_light,imf_type, self.isochrone.upper()), header=0, delim_whitespace=True)
@@ -252,7 +258,7 @@ class MakeMock():
         this function composes the actual eagle spectrum and stores it in a fits_file
         '''
         particles_range = np.arange(0, len(self.age_tag), 1)
-        print(f'Particles range: {particles_range}')
+        print(f'Computing spectra for {len(particles_range)} particles')
 
         # compute mass weighted meand and standard deviation of age & met for later
         average_age = np.sum(self.mass_tag * self.age_tag) / np.sum(self.mass_tag)
@@ -262,9 +268,6 @@ class MakeMock():
                              ((np.sum(self.mass_tag))**2-np.sum(self.mass_tag**2)))
         spread_met = np.sqrt((np.sum(self.mass_tag)*np.sum(self.mass_tag*(self.met_tag-average_met)**2))/
                              ((np.sum(self.mass_tag))**2-np.sum(self.mass_tag**2)))
-
-        # defaults for eagle spectrum
-        spectrum_mass = np.zeros(4300)
 
         '''
         dataframe for model grid note: data in df_grid corresponds to the actual grid
@@ -289,9 +292,14 @@ class MakeMock():
         met_statistics, met_bin_edges, met_binnumber = stats.binned_statistic(
             self.met_tag, None, 'count', bins=met_bin)
 
-        # create spectrum
-        for i in particles_range:
-            print(i)
+        # defaults for eagle spectrum
+        spectrum_mass = np.zeros(4300)
+
+        # empty array for masses
+        masses = np.zeros([len(age_grid),len(met_grid)])
+
+        # create spectrum and save masses
+        for i in tqdm(particles_range):
             # assign the corresponding grid value depending on in which bin the actual eagle data landed
             age = age_grid[age_binnumber[i] - 1]
             met = met_grid[met_binnumber[i] - 1]
@@ -299,6 +307,10 @@ class MakeMock():
             x = df_grid[(df_grid['Age'] == age) & (df_grid['[M/H]'] == met)]
             flux = flux_column[x.index[0]]
             spectrum_mass = spectrum_mass + self.mass_tag[i] * flux
+            # search for right age/met combination to extract mass
+            x_mass = np.where(age_grid == age)
+            y_mass = np.where(met_grid == met)
+            masses[x_mass, y_mass] = self.mass_tag[i]
 
         # write spectrum to fits-file
         hdu = fits.PrimaryHDU(spectrum_mass)
@@ -310,8 +322,13 @@ class MakeMock():
         hdu.header.append(('met', average_met, 'mass-weighted average metallicity'), end=True)
         hdu.header.append(('sig_met', spread_met, 'mass-weighted SD of metallicity'), end=True)
         hdulist = fits.HDUList([hdu])
-        hdulist.writeto('result_%s_%s_%s%4.2f_%s.fits' %(
-            name_particles , self.isochrone , imf_type , imf_slope , alpha))
+        hdulist.writeto('result_%s_%s_%s%4.2f_%s.fits' % (
+            name_particles, self.isochrone, imf_type, imf_slope, alpha))
+
+        # write masses to csv file
+        massdata = pd.DataFrame(masses.T, columns=age_grid.round(3), index=met_grid.round(3))
+        massdata.to_csv('masses_agemet_%s_%s_%s%4.2f_%s.csv' % (
+            name_particles, self.isochrone, imf_type, imf_slope, alpha))
 
     '''
     if you want to add noise to any spectrum, 
