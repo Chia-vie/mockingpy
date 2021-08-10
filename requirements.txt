@@ -4,3 +4,4 @@ pyYAML
 astropy
 pandas
 matplotlib
+tqdm
