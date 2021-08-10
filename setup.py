@@ -1,5 +1,4 @@
 import setuptools
-
 # read in required packages from requirements.txt
 with open("requirements.txt", "r") as fh:
     requirements = fh.read().splitlines()

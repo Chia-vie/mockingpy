@@ -12,7 +12,29 @@ from scipy import interpolate
 from astropy.io import fits
 import pandas as pd
 import pickle
-
+print(
+"""
+  __  __              _     _                             
+ |  \/  |  ___   __  | |__ (_)  _ _    __ _   _ __   _  _ 
+ | |\/| | / _ \ / _| | / / | | | ' \  / _` | | '_ \ | || |
+ |_|  |_| \___/ \__| |_\_\ |_| |_||_| \__, | | .__/  \_, |
+                                      |___/  |_|     |__/
+     ,~~~~~~                      ,******>
+  ,,~*       \                ,***       >
+ <       ◘    \       ,,,*****     ,,,,#
+  *++,,        \,,,,,/       ,**
+       \                     /
+       |                    /
+       /                   /
+       \                  / 
+        \                /
+         `-.            /
+            **\      /**
+               \~~~~/
+               //,||
+            ,,//--*/`
+           /--/`  *
+""")
 class MakeMock():
     def __init__(self, config):
         with open(config, "r") as ymlfile:
