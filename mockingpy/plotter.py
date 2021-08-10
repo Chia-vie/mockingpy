@@ -3,14 +3,15 @@ from astropy.io import fits
 import numpy as np
 import glob
 import os
-import seaborn as sns
+import pandas as pd
+from matplotlib.colors import LogNorm
 
 class PlotSpec():
     def __init__(self,files):
         self.path = os.getcwd()
         self.filenames = [filename for filename in glob.glob(self.path+'/'+files)]
         self.colors()
-        self.plot()
+        self.plot_spec()
 
     def colors(self):
         #purpleblue = ['#642e7c','#7251b7','#8984d6','#93bae1','#8ce2ee']*10
@@ -24,7 +25,7 @@ class PlotSpec():
         for label in labels:
             yield label
 
-    def plot(self):
+    def plot_spec(self):
         x = np.arange(3540.5,3540.5+(4300*0.9),0.9)
         fig, ax = plt.subplots(1,1,figsize=(20,5))
         colors = self.colors()
@@ -40,6 +41,24 @@ class PlotSpec():
         for line in leg.get_lines():
             line.set_linewidth(10)
         plt.show()
+
+class AgeMet():
+    def __init__(self, file):
+        self.file = file
+        self.path = os.getcwd()
+        self.data = pd.read_csv(self.path + '/' + self.file, header=0, index_col=0)
+        self.plot_age_met()
+
+    def plot_age_met(self):
+        fig, ax = plt.subplots(1, 1, figsize=(10, 10))
+        map = ax.pcolor(self.data.columns.astype(float), self.data.index, self.data, cmap='magma', norm=LogNorm())
+        ax.set_title('Age-Metallicity Distribution')
+        ax.set_xlabel('Age')
+        ax.set_ylabel('Metallicity')
+        plt.colorbar(map, label='Mass')
+        plt.show()
+
+
 
 
 
