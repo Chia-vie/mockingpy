@@ -37,7 +37,7 @@ Download the MILES model directories e.g. MILES_BASTI_CH_baseFe/*fits from here:
 http://research.iac.es/proyecto/miles/pages/webtools/tune-ssp-models.php
 
 You might need to change your browser in case you face any difficulties.
-
+HTTPS is not supported!
 Specify the path to all your models (e.g. milesdata/models/) in the config file. 
 
 ### 2) MILES mass to light ratios
@@ -45,6 +45,7 @@ Download the M/L files ('out_phot_*.txt') from here (one for each isochrone and 
 
 http://research.iac.es/proyecto/miles/pages/predicted-masses-and-photometric-observables-based-on-photometric-libraries.php
 
+HTTPS is not supported!
 ATTENTION: Missing headers. Put this line on the very top of each file:
 
 `IMF_type slope [M/H] Age U B V R I J H K U-V B-V V-R V-I V-J V-H V-K (M/L)U (M/L)B (M/L)V (M/L)R (M/L)I (M/L)J (M/L)H (M/L)K F439W F555W F675W F814W F439W-F555W F555W-F675W F555W-F814W`
