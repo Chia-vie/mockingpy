@@ -5,7 +5,7 @@ with open("requirements.txt", "r") as fh:
 
 setuptools.setup(
     name="mockingpy",
-    version="0.0.0",
+    version="0.0.1",
     author='Christine Ackerl, based on work by Alina Boecker',
     author_email='christine.ackerl@univie.ac.at',
     description='Create galaxy mock spectra (and more) using Python.',
