@@ -35,7 +35,7 @@ print(
                        \~~~~/
                        //,||
                     ,,//--*/`
-                   /--/`  *
+                   /--/`  *     Ascii-art by TwoB00m
 ''')
 
 class MakeMock():
