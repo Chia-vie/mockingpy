@@ -1,10 +1,8 @@
 particles:
-# and the prefix of the files
-# file name ending should be .dat
-    path: particles/BJ/ # The directory where you store your particle data (relative path)
-    prefix: with_header_halo_lum_ # The prefix of your particle files.
-    suffix: .dat # The suffix of your particle files.
-    names: # the individual names of your particle files
+    path: particles/ # Directory with your particle data
+    prefix: with_header_halo_lum_ # Prefix of your particle files.
+    suffix: .dat # Suffix of your particle files.
+    names: # Individual names of your particle files
         - '02'
         #- '05'
         #- '07'
@@ -16,29 +14,29 @@ particles:
         #- '15'
         #- '17'
         #- '20'
-    columns: # The header names for age, metallicity and mass columns in your particle files
+    columns: # Header names for age/metallicity/mass columns in your particle files
         age: age # Age
-        metallicity: feh # M_H
+        metallicity: m_h # M_H
         mass: mass # Mass
 
 models:
-    # Path to the MILES models. Don't forget the / at the end.
-    # This directory should contain data in following structure (example):
+    # Path to MILES models. DON'T FORGET THE / at the end.
+    # Should contain data in following structure (example):
     # MILES_BASTI_UN_baseFe/Mun0.30Zm0.25T00.0300_iTp0.00_baseFe.fits
     path_models: milesdata/models/
-    # Path to the mass to light ratios
+    # Path to mass to light ratios
     path_mass_to_light: milesdata/masstolight/
-    # Where to store intermediate data products
+    # Output directory for intermediate data products
     path_output: milesdata/output/
 
     # Which MILES models would you like to use?
     # All options are listed as comments.
-    # Remove the '#' to use them.
+    # Remove the '#' to use.
     isochrone: BaSTI # Padova00
     imftype:
-    #un(imodal) or bi(modal)
-        - un # unimodal
-        #- bi # bimodal
+    # un(imodal) or bi(modal)
+        - un
+        #- bi
     imfslope:
         #- 0.3
         - 0.8
