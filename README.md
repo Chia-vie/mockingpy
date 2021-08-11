@@ -13,39 +13,38 @@ Written by Christine Ackerl, based on work by Alina Boecker
 
 ## How to use mockingpy:
 
-1) Clone this repository into a local working directory
+1) Install the package using `pip install mockingpy`
 
-2) Install the package using `python setup.py install` in the same directory
+2) Download MILES data (see below)
 
-3) Download MILES data (see below)
-
-4) In python `import mockingpy` 
+3) In python `import mockingpy` 
 
    This will create a `config.yml` file in your working directory. 
 
-5) Edit this config file according to your needs and specify the paths to your MILES and particle data (see below). 
+4) Edit this config file according to your needs and specify the paths to your MILES and particle data (see below). 
 
-6) To create the mock spectra run `mockingpy.MakeMock('config.yml')` or change the config filename accordingly
+5) To create the mock spectra run `mockingpy.MakeMock('config.yml')` or change the config file name accordingly
 
 The resulting spectra will be stored in `.fits` files.
+
+6) To view the output spectra run `mockingpy.PlotSpec('filename.fits')` or use asterisk wildcard (e.g. `'*.fits'`) to compare multiple output spectra. 
 
 ## MILES data:
 
 ### 1) MILES SSP models   
-Download the MILES model directories e.g. MILES_BASTI_CH_baseFe/*fits from here:
+Download the MILES model directories e.g. MILES_BASTI_CH_baseFe/*fits from here (Note: No HTTPS support):
 
 http://research.iac.es/proyecto/miles/pages/webtools/tune-ssp-models.php
 
-You might need to change your browser in case you face any difficulties.
-HTTPS is not supported!
+You might need to change your browser in case you face any difficulties.  
+
 Specify the path to all your models (e.g. milesdata/models/) in the config file. 
 
 ### 2) MILES mass to light ratios
-Download the M/L files ('out_phot_*.txt') from here (one for each isochrone and IMF-type): 
+Download the M/L files ('out_phot_*.txt') from here, one for each isochrone and IMF-type (Note: No HTTPS support): 
 
 http://research.iac.es/proyecto/miles/pages/predicted-masses-and-photometric-observables-based-on-photometric-libraries.php
 
-HTTPS is not supported!
 ATTENTION: Missing headers. Put this line on the very top of each file:
 
 `IMF_type slope [M/H] Age U B V R I J H K U-V B-V V-R V-I V-J V-H V-K (M/L)U (M/L)B (M/L)V (M/L)R (M/L)I (M/L)J (M/L)H (M/L)K F439W F555W F675W F814W F439W-F555W F555W-F675W F555W-F814W`
