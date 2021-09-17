@@ -59,39 +59,48 @@ class AgeMet():
         plt.colorbar(map, label='Mass')
         plt.show()
 
-class Maps():
+class Particles():
     def __init__(self, file):
         self.file = file
         self.path = os.getcwd()
         self.data = vaex.from_ascii(self.path + '/' + self.file)
+        self.m_sum = self.data.sum(self.data.mass)
 
-    def make(self, valcol, selcol=None, seltype=None, limit=None, exclude=None, limits=[[-200, 200], [-200, 200]], shape=(50, 50)):
+    def map(self, valcol, selection=False, limits=[[-200, 200], [-200, 200]], shape=(50, 50)):
         '''
         :param valcol: The column name of the values to map
+        :param selection: The expression by which to select, e.g.: 'mass < 10**9'
         :return: None, plots heatmap
         '''
-        if not seltype == None:
-            if seltype.lower() == 'l':
-                selection = self.data[selcol] > limit
-                title = f'{selcol}>{limit}'
-            elif seltype.lower() == 'u':
-                selection = self.data[selcol] < limit
-                title = f'{selcol}<{limit}'
-            elif seltype.lower() == 'e':
-                selection = self.data[selcol] != exclude
-                title = f'Excluded: {selcol} = {exclude}'
-        else:
-            selection = None
-            title = 'All'
         self.valcol = valcol
         self.values= self.data.mean(self.data[self.valcol], binby=[self.data.x, self.data.y], limits=limits, shape=shape, selection=selection)
         fig, ax = plt.subplots(1, 1, figsize=(6, 6))
         map =  plt.imshow(self.values.T, origin='lower', extent=[-200,200,-200,200])
+
+        if selection:
+            title = selection
+        else:
+            title = 'All'
+
         ax.set_title(title)
         ax.set_xlabel('x [kpc]')
         ax.set_ylabel('y [kpc]')
         plt.colorbar(map, label=self.valcol)
         plt.show()
+
+    def subset(self, selcol, expression, limit):
+        if expression == '<':
+            sel = self.data[self.data[selcol] < limit]
+        elif expression == '>':
+            sel = self.data[self.data[selcol] > limit]
+        elif expression == '==':
+            sel = self.data[self.data[selcol] == limit]
+        else:
+            sel = self.data[self.data[selcol] != limit]
+        out = sel.groupby(by='nsat').agg({'mass': 'sum',
+                                  'feh': ['mean', 'std'], 'age': ['mean','std']})
+        out['mass/halo_mass'] = out.mass / self.m_sum
+        return out
 
     def satellites(self, name):
         self.name = name
