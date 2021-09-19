@@ -88,6 +88,37 @@ class Particles():
         plt.colorbar(map, label=self.valcol)
         plt.show()
 
+    def mass_fractions(self, groupeddata, binnum=20, log_spacing=True):
+        '''
+        :param groupeddata: tuple of vaex dataframes grouped by individual satellites
+        :param binnum: number of bins
+        :return:
+        '''
+        if log_spacing == True:
+            colors=['purple','royalblue','black']
+            for i, data in enumerate(groupeddata):
+                if i == 0:
+                    counts, logbins = np.histogram(np.log10(data.mass.values), bins=binnum)
+                    label = 'all'
+                else:
+                    label = 'subset'
+                logmassbins = []
+                for edge in logbins[1:]:
+                    binmembers = data[np.log10(data.mass) <= edge]
+                    binmass = binmembers.sum(binmembers.mass)
+                    logmassbins.append(binmass)
+                norm_logmassbins = logmassbins/self.m_sum
+                x = logbins[1:]
+                y = norm_logmassbins
+                plt.bar(x, y, align='edge', color=colors[i], label=label, width=-.5)
+            plt.xlim(logbins[4], logbins[-1])
+            plt.legend()
+            plt.xlabel('Satellite log(m_stellar)')
+            plt.ylabel('Fraction of halo m_stellar')
+            plt.show()
+        else:
+            pass
+
     def subset(self, selcol, expression, limit):
         if expression == '<':
             sel = self.data[self.data[selcol] < limit]
