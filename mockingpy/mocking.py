@@ -39,13 +39,18 @@ print(
 ''')
 
 class MakeMock():
-    def __init__(self, config):
+    def __init__(self, config, subset=True):
         with open(config, "r") as ymlfile:
             self.config = yaml.load(ymlfile, Loader=yaml.FullLoader)
         self.read_config()
         # loop through all possibilities
         for name in self.name_particles:
-            self.read_particles(name)
+            if subset == True:
+                self.subcol = input(f'Enter column name to draw subset from {name}')
+                self.limit = float(input(f'Enter limit to draw subset from {name}'))
+                self.read_particles_subset(name)
+            else:
+                self.read_particles(name)
             age_models, met_models, age_grid, met_grid, age_bin, met_bin = self.set_up_grid()
             for t in self.imf_type:
                 for s in self.imf_slope:
@@ -79,7 +84,7 @@ class MakeMock():
 
     def read_particles(self,name):
         '''
-        get age, metallicities and mass from eagle simulation
+        get age, metallicities and mass from simulated particles
         for determining min and max values of age and met
         :param name: Name of particle file
         :return:
@@ -91,6 +96,16 @@ class MakeMock():
         self.age_tag = particles[self.agecol].to_numpy()
         self.met_tag = particles[self.metcol].to_numpy()
         self.mass_tag = particles[self.masscol].to_numpy()
+
+    def read_particles_subset(self,name):
+        print(f'Reading particle data: {name}')
+        particles = pd.read_table('%s%s%s.dat' % (self.path_particles, self.prefix_particles, name), sep="\s+")
+        particles.replace([np.inf, -np.inf], np.nan, inplace=True)
+        particles.dropna(subset=[self.agecol, self.metcol, self.masscol], inplace=True)
+        subset = particles[particles[self.subcol] > self.limit]
+        self.age_tag = subset[self.agecol].to_numpy()
+        self.met_tag = subset[self.metcol].to_numpy()
+        self.mass_tag = subset[self.masscol].to_numpy()
 
     def set_up_grid(self):
         '''
