@@ -1,8 +1,8 @@
 import os
 from shutil import copyfile
 from pkg_resources import resource_stream
-from .mocking import MakeMock
-from .plotter import PlotSpec, AgeMet, Particles
+from .mocking import MockSpec
+from .plotter import ViewSpec, ViewParticles, ViewAgeMet
 
 default_config = resource_stream('mockingpy', 'default_config.yml').name
 path = os.getcwd()

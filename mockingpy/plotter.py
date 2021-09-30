@@ -7,34 +7,38 @@ import pandas as pd
 from matplotlib.colors import LogNorm
 import vaex
 
-class PlotSpec():
+class ViewSpec():
     def __init__(self,files):
         self.path = os.getcwd()
         self.filenames = [filename for filename in glob.glob(self.path+'/'+files)]
-        self.colors()
         self.plot_spec()
 
-    def colors(self):
+    def colors(self, palette):
         #purpleblue = ['#642e7c','#7251b7','#8984d6','#93bae1','#8ce2ee']*10
         #icey = ['#003279','#4386bb','#8bbedc','#cccce4','#fbb9cd','#896eb6','#6a1364','#49175f','#020316']*10
         icey2 = ['#0f142d','#112a60','#2a2e62','#205094','#50356f','#3a79b9','#8c7fb2','#84acd5','#babed9','#f0c6d6','#ead8e1']*10
-        for color in icey2:
-            yield color
+        simple = ['purple','royalblue','black']*10
+        if palette == 'icey2':
+            for color in icey2:
+                yield color
+        else:
+            for color in simple:
+                yield color
 
     def labels(self):
         labels = [filename.replace(self.path+'/','') for filename in self.filenames]
         for label in labels:
             yield label
 
-    def plot_spec(self):
+    def plot_spec(self, color='icey2'):
         x = np.arange(3540.5,3540.5+(4300*0.9),0.9)
         fig, ax = plt.subplots(1,1,figsize=(20,5))
-        colors = self.colors()
+        colors = self.colors(color)
         labels = self.labels()
         for filename in self.filenames:
             self.data = fits.open(filename)[0].data
             ax.plot(x, self.data, color=next(colors), label=next(labels))
-        ax.set_xlabel('wavelength [nm]')
+        ax.set_xlabel(r'wavelength [$\AA$] ')
         ax.set_ylabel('flux')
         ax.set_title('Mock spectra')
         leg=ax.legend(bbox_to_anchor=(1, 1))
@@ -43,7 +47,44 @@ class PlotSpec():
             line.set_linewidth(10)
         plt.show()
 
-class AgeMet():
+    def residuals_from_files(self, labels):
+        x = np.arange(3540.5, 3540.5 + (4300 * 0.9), 0.9)
+        fig, ax = plt.subplots(1, 1, figsize=(20, 5))
+        colors = self.colors()
+        all = fits.open(self.filenames[0])[0].data
+        for i,filename in enumerate(self.filenames[1:]):
+            sub = fits.open(filename)[0].data
+            label = labels[i]
+            res = (all-sub)/all
+            ax.plot(x, res, color=next(colors), label=label)
+        ax.set_xlabel(r'wavelength [$\AA$] ')
+        ax.set_ylabel('Fraction of total flux')
+        ax.set_title('Mock spectra')
+        leg = ax.legend(bbox_to_anchor=(1, 1))
+        plt.tight_layout()
+        for line in leg.get_lines():
+            line.set_linewidth(10)
+        plt.show()
+
+    def residuals_from_data(self,datasets, labels, colors='simple'):
+        x = np.arange(3540.5, 3540.5 + (4300 * 0.9), 0.9)
+        fig, ax = plt.subplots(1, 1, figsize=(20, 5))
+        colors = self.colors(colors)
+        all = datasets[0]
+        for i,dataset in enumerate(datasets[1:]):
+            label = labels[i]
+            res = (all-dataset)/all
+            ax.plot(x, res, color=next(colors), label=label)
+        ax.set_xlabel(r'wavelength [$\AA$] ')
+        ax.set_ylabel('Fraction of total flux')
+        ax.set_title('Mock spectra')
+        leg = ax.legend(bbox_to_anchor=(1, 1))
+        plt.tight_layout()
+        for line in leg.get_lines():
+            line.set_linewidth(10)
+        plt.show()
+
+class ViewAgeMet():
     def __init__(self, file):
         self.file = file
         self.path = os.getcwd()
@@ -59,7 +100,7 @@ class AgeMet():
         plt.colorbar(map, label='Mass')
         plt.show()
 
-class Particles():
+class ViewParticles():
     def __init__(self, file):
         self.file = file
         self.path = os.getcwd()
@@ -101,7 +142,7 @@ class Particles():
                     counts, logbins = np.histogram(np.log10(data.mass.values), bins=binnum)
                     label = 'all'
                 else:
-                    label = 'subset'
+                    label = f'subset {i}'
                 logmassbins = []
                 for edge in logbins[1:]:
                     binmembers = data[np.log10(data.mass) <= edge]

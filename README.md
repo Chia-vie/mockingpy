@@ -23,11 +23,11 @@ Written by Christine Ackerl, based on work by Alina Boecker
 
 4) Edit this config file according to your needs and specify the paths to your MILES and particle data (see below). 
 
-5) To create the mock spectra run `mockingpy.MakeMock('config.yml')` or change the config file name accordingly
+5) To create the mock spectra run `mockingpy.MockSpec('config.yml')` or change the config file name accordingly
 
 The resulting spectra will be stored in `.fits` files.
 
-6) To view the output spectra run `mockingpy.PlotSpec('filename.fits')` or use asterisk wildcard (e.g. `'*.fits'`) to compare multiple output spectra. 
+6) To view the output spectra run `mockingpy.ViewSpec('filename.fits')` or use asterisk wildcard (e.g. `'*.fits'`) to compare multiple output spectra.
 
 ## MILES data:
 
