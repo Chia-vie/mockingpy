@@ -38,7 +38,7 @@ print(
                    /--/`  *     Ascii-art by TwoB00m
 ''')
 
-class MakeMock():
+class MockSpec():
     def __init__(self, config, subset=True):
         with open(config, "r") as ymlfile:
             self.config = yaml.load(ymlfile, Loader=yaml.FullLoader)

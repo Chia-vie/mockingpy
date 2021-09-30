@@ -7,10 +7,11 @@ import pandas as pd
 from matplotlib.colors import LogNorm
 import vaex
 
-class Spectra():
+class ViewSpec():
     def __init__(self,files):
         self.path = os.getcwd()
         self.filenames = [filename for filename in glob.glob(self.path+'/'+files)]
+        self.plot_spec()
 
     def colors(self, palette):
         #purpleblue = ['#642e7c','#7251b7','#8984d6','#93bae1','#8ce2ee']*10
@@ -83,7 +84,7 @@ class Spectra():
             line.set_linewidth(10)
         plt.show()
 
-class AgeMet():
+class ViewAgeMet():
     def __init__(self, file):
         self.file = file
         self.path = os.getcwd()
@@ -99,7 +100,7 @@ class AgeMet():
         plt.colorbar(map, label='Mass')
         plt.show()
 
-class Particles():
+class ViewParticles():
     def __init__(self, file):
         self.file = file
         self.path = os.getcwd()
