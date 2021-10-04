@@ -79,7 +79,7 @@ class MakeMock():
 
     def read_particles(self,name):
         '''
-        get age, metallicities and mass from eagle simulation
+        get age, metallicities and mass from simulated particles
         for determining min and max values of age and met
         :param name: Name of particle file
         :return:
@@ -167,7 +167,6 @@ class MakeMock():
         '''
         print(f'Computing fluxes for IMF-type: {imf_type}, IMF-slope: {imf_slope}, alpha-abundance: {alpha}')
         #get all metallicities and ages from MILES-Models for chosen IMF
-        #df = pd.read_csv('milesdata/%s_%s_baseFe_agemetML.txt'%(isochrone,imf_type),header=0, delim_whitespace=True)
         df = pd.read_csv('%sout_phot_%s_%s.txt'%(self.path_mass_to_light,imf_type,self.isochrone.upper()),header=0, delim_whitespace=True)
         df_slope = df[df['slope']==imf_slope]
         df_models = df_slope[['[M/H]','Age']].copy()
