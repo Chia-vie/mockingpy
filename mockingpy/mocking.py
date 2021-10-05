@@ -177,8 +177,8 @@ class MockSpec():
 
     def flux_table(self, imf_type, imf_slope, alpha):
         '''
-        this functions makes a flux table for all age/met combinations
-        of the specified MILES library and stores it in a txt- and pickle-file
+        produces flux table for all age/met combinations
+        of specified MILES library and stores it in a txt- and pickle-file
         '''
         print(f'Computing fluxes for IMF-type: {imf_type}, IMF-slope: {imf_slope}, alpha-abundance: {alpha}')
         #get all metallicities and ages from MILES-Models for chosen IMF
@@ -295,10 +295,9 @@ class MockSpec():
         '''
         this function composes the actual eagle spectrum and stores it in a fits_file
         '''
-        particles_range = np.arange(0, len(self.age_tag), 1)
-        print(f'Computing spectra for {len(particles_range)} particles')
+        print(f'Computing spectra for {len(self.age_tag)} particles')
 
-        # compute mass weighted meand and standard deviation of age & met for later
+        # compute mass weighted mean and standard deviation of age & met for later
         average_age = np.sum(self.mass_tag * self.age_tag) / np.sum(self.mass_tag)
         average_met = np.sum(self.mass_tag * self.met_tag) / np.sum(self.mass_tag)
 
@@ -319,7 +318,7 @@ class MockSpec():
             self.isochrone, imf_type, imf_slope, alpha),'rb'))
 
         '''    
-        binning: eagle data that falls into a bin will be assigned the corresponding
+        binning: particle data that falls into a bin will be assigned the corresponding
         grid point binnumber gives you the number of the bin in which the value
         falls (has same length as input data and values from 1 to length of bin)
         '''
@@ -331,27 +330,27 @@ class MockSpec():
             self.met_tag, None, 'count', bins=met_bin)
 
         # defaults for eagle spectrum
-        spectrum_mass = np.zeros(4300)
+        spectrum_weight = np.zeros(4300)
 
         # empty array for masses
         masses = np.zeros([len(age_grid),len(met_grid)])
 
         # create spectrum and save masses
-        for i in tqdm(particles_range):
+        for i in tqdm(range(len(self.age_tag))):
             # assign the corresponding grid value depending on in which bin the actual eagle data landed
-            age = age_grid[age_binnumber[i] - 1]
-            met = met_grid[met_binnumber[i] - 1]
+            age = age_grid[age_binnumber[i] - 1] # -1 because bin numbers start with 1 instead of 0
+            met = met_grid[met_binnumber[i] - 1] # -1 because bin numbers start with 1 instead of 0
             # search for right age/met combination to extract flux
             x = df_grid[(df_grid['Age'] == age) & (df_grid['[M/H]'] == met)]
             flux = flux_column[x.index[0]]
-            spectrum_mass = spectrum_mass + self.mass_tag[i] * flux
+            spectrum_weight = spectrum_weight + self.mass_tag[i] * flux
             # search for right age/met combination to extract mass
             x_mass = np.where(age_grid == age)
             y_mass = np.where(met_grid == met)
             masses[x_mass, y_mass] = self.mass_tag[i]
 
         # write spectrum to fits-file
-        hdu = fits.PrimaryHDU(spectrum_mass)
+        hdu = fits.PrimaryHDU(spectrum_weight)
         hdu.header.append(('CRVAL1', 3540.5, 'starting wavelength'), end=True)
         hdu.header.append(('CDELT1', 0.9, 'angstrom/pixel scale'), end=True)
         hdu.header.append(('NAXIS1', 4300, 'number of pixels'), end=True)
