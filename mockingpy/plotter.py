@@ -7,7 +7,7 @@ import pandas as pd
 from matplotlib.colors import LogNorm
 import vaex
 
-class ViewSpec():
+class Spectra():
     def __init__(self,files):
         self.path = os.getcwd()
         self.filenames = [filename for filename in glob.glob(self.path+'/'+files)]
@@ -47,11 +47,18 @@ class ViewSpec():
             line.set_linewidth(10)
         plt.show()
 
-    def residuals_from_files(self, labels):
+    def residuals_from_files(self, labels, total=0):
+        '''
+        Args:
+            labels:
+            total: the list index in filenames of the file containing the total flux. Defaults to 0.
+
+        Returns:
+        '''
         x = np.arange(3540.5, 3540.5 + (4300 * 0.9), 0.9)
         fig, ax = plt.subplots(1, 1, figsize=(20, 5))
         colors = self.colors()
-        all = fits.open(self.filenames[0])[0].data
+        all = fits.open(self.filenames[total])[0].data
         for i,filename in enumerate(self.filenames[1:]):
             sub = fits.open(filename)[0].data
             label = labels[i]
@@ -114,9 +121,9 @@ class ViewParticles():
         :return: None, plots heatmap
         '''
         self.valcol = valcol
-        self.values= self.data.mean(self.data[self.valcol], binby=[self.data.x, self.data.y], limits=limits, shape=shape, selection=selection)
+        self.values = self.data.mean(self.data[self.valcol], binby=[self.data.x, self.data.y], limits=limits, shape=shape, selection=selection)
         fig, ax = plt.subplots(1, 1, figsize=(6, 6))
-        map =  plt.imshow(self.values.T, origin='lower', extent=[-200,200,-200,200])
+        map = plt.imshow(self.values.T, origin='lower', extent=[-200,200,-200,200])
 
         if selection:
             title = selection
