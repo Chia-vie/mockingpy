@@ -5,3 +5,4 @@ astropy
 pandas
 matplotlib
 tqdm
+vaex
