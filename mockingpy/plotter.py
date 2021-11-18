@@ -11,6 +11,9 @@ class Spectra():
     def __init__(self,files):
         self.path = os.getcwd()
         self.filenames = [filename for filename in glob.glob(self.path+'/'+files)]
+        #for filename in self.filenames:
+        self.spectra = [fits.open(filename)[0].data for filename in self.filenames]
+        self.names = [filename.replace(self.path+'/','') for filename in self.filenames]
         self.plot_spec()
 
     def colors(self, palette):
@@ -26,22 +29,69 @@ class Spectra():
                 yield color
 
     def labels(self):
-        labels = [filename.replace(self.path+'/','') for filename in self.filenames]
-        for label in labels:
-            yield label
+        for name in self.names:
+            yield name
 
     def plot_spec(self, color='icey2'):
         x = np.arange(3540.5,3540.5+(4300*0.9),0.9)
         fig, ax = plt.subplots(1,1,figsize=(20,5))
         colors = self.colors(color)
         labels = self.labels()
-        for filename in self.filenames:
-            self.data = fits.open(filename)[0].data
-            ax.plot(x, self.data, color=next(colors), label=next(labels))
+        for spectrum in self.spectra:
+            #self.data = fits.open(filename)[0].data
+            ax.plot(x, spectrum, color=next(colors), label=next(labels))
         ax.set_xlabel(r'wavelength [$\AA$] ')
         ax.set_ylabel('flux')
         ax.set_title('Mock spectra')
         leg=ax.legend(bbox_to_anchor=(1, 1))
+        plt.tight_layout()
+        for line in leg.get_lines():
+            line.set_linewidth(10)
+        plt.show()
+
+    def add_subset(self, filenum1, filenum2, operation, name):
+        if operation.lower() == 'add':
+            self.spectra.append(self.spectra[filenum1] + self.spectra[filenum2])
+        elif operation.lower() in ['sub','subtract']:
+            self.spectra.append(self.spectra[filenum1] - self.spectra[filenum2])
+        self.names.append(name)
+        print(f'New list of subsets: {self.names}')
+
+    def compare(self, labels, filenums=None, total=0, palette='simple'):
+        '''
+        Args:
+            labels:
+            total: the list index in filenames of the file containing the total flux. Defaults to 0.
+
+        Returns:
+        '''
+        if filenums == None:
+            filenums = [i for i,file in enumerate(self.spectra)]
+        x = np.arange(3540.5, 3540.5 + (4300 * 0.9), 0.9)
+        fig = plt.figure(figsize=[20, 15])
+        fig.suptitle('Mock spectra', size=20)
+        ax1 = fig.add_subplot(311)
+        ax2 = fig.add_subplot(312)
+        ax3 = fig.add_subplot(313)
+        #fig, ax = plt.subplots(1, 1, figsize=(20, 5))
+        colors = self.colors(palette)
+        all = self.spectra[total]
+        for i in filenums:
+            sub = self.spectra[i]
+            label = labels[i]
+            #residual = all - sub
+            relative = sub/all
+            median = np.median(relative)
+            comparison = relative/median
+            currentcolor = next(colors)
+            ax1.plot(x, comparison, color=currentcolor, label=label)
+            ax2.plot(x, sub, color=currentcolor, label=label)
+            ax3.plot(x, relative, color=currentcolor, label=label)
+        ax3.set_xlabel(r'wavelength [$\AA$] ')
+        ax1.set_ylabel('Fraction of total flux devided by median')
+        ax2.set_ylabel('Flux')
+        ax3.set_ylabel('Fraction of total flux')
+        leg = ax1.legend(bbox_to_anchor=(1, 1))
         plt.tight_layout()
         for line in leg.get_lines():
             line.set_linewidth(10)
@@ -232,11 +282,3 @@ class ViewParticles():
         fig.colorbar(b, ax=ax2).set_label(label='$t_{acc}$ [Gyr ago]',size=20)
         plt.subplots_adjust(wspace=0.1)
         plt.show()
-
-
-
-
-
-
-
-
